@@ -2,12 +2,14 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useState } from 'react'
 import {
   ArrowRight,
   Check,
   Eye,
   EyeOff,
+  LoaderCircle,
   LockKeyhole,
   Mail,
   Radar,
@@ -15,9 +17,33 @@ import {
   Signal,
   Sparkles,
 } from 'lucide-react'
+import { login } from '@/lib/api'
 
 export function LoginScreen() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
   const [showPassword, setShowPassword] = useState(false)
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    if (submitting) return
+    setError(null)
+    setSubmitting(true)
+    try {
+      await login(email, password)
+      const next = searchParams.get('next')
+      router.replace(next && next.startsWith('/') ? next : '/')
+      router.refresh()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'No se pudo iniciar sesión')
+    } finally {
+      setSubmitting(false)
+    }
+  }
 
   return (
     <main className="login-page">
@@ -96,11 +122,20 @@ export function LoginScreen() {
               <p>Ingresa para acceder al sistema de monitoreo.</p>
             </div>
 
-            <form className="login-form" onSubmit={(event) => event.preventDefault()}>
+            <form className="login-form" onSubmit={handleSubmit} noValidate>
               <label htmlFor="email">Correo electrónico</label>
               <div className="field-wrap">
                 <Mail aria-hidden="true" />
-                <input id="email" type="email" placeholder="nombre@empresa.com" autoComplete="email" />
+                <input
+                  id="email"
+                  type="email"
+                  placeholder="nombre@empresa.com"
+                  autoComplete="email"
+                  required
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  disabled={submitting}
+                />
               </div>
 
               <div className="label-row">
@@ -109,12 +144,22 @@ export function LoginScreen() {
               </div>
               <div className="field-wrap">
                 <LockKeyhole aria-hidden="true" />
-                <input id="password" type={showPassword ? 'text' : 'password'} placeholder="Ingresa tu contraseña" autoComplete="current-password" />
+                <input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Ingresa tu contraseña"
+                  autoComplete="current-password"
+                  required
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                  disabled={submitting}
+                />
                 <button
                   type="button"
                   className="password-toggle"
                   aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                   onClick={() => setShowPassword(!showPassword)}
+                  disabled={submitting}
                 >
                   {showPassword ? <EyeOff aria-hidden="true" /> : <Eye aria-hidden="true" />}
                 </button>
@@ -126,8 +171,23 @@ export function LoginScreen() {
                 Recordarme en este dispositivo
               </label>
 
-              <button className="login-submit" type="submit">
-                Iniciar sesión <ArrowRight aria-hidden="true" />
+              {error && (
+                <p className="login-error" role="alert">
+                  {error}
+                </p>
+              )}
+
+              <button className="login-submit" type="submit" disabled={submitting}>
+                {submitting ? (
+                  <>
+                    <LoaderCircle className="animate-spin" aria-hidden="true" />
+                    Verificando…
+                  </>
+                ) : (
+                  <>
+                    Iniciar sesión <ArrowRight aria-hidden="true" />
+                  </>
+                )}
               </button>
             </form>
 

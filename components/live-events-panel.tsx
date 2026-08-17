@@ -1,16 +1,25 @@
 'use client'
 
 import { Activity } from 'lucide-react'
-import { formatTimestamp, type DetectionEvent } from '@/lib/vigia-events'
+import type { Evento } from '@/lib/api'
+
+function conteoDe(evento: Evento): number | null {
+  const raw = evento.datos_raw
+  if (raw && typeof raw === 'object' && 'conteo_total' in raw) {
+    const valor = raw.conteo_total
+    if (typeof valor === 'number') return valor
+  }
+  return null
+}
 
 type Props = {
-  events: DetectionEvent[]
+  events: Evento[]
   live: boolean
 }
 
-/** Panel inferior: registro desplazable de los últimos 10 eventos. */
+/** Panel inferior: registro desplazable de los últimos eventos reales. */
 export function LiveEventsPanel({ events, live }: Props) {
-  const alerts = events.filter((e) => e.isAlert).length
+  const alerts = events.filter((e) => e.nivel_relevancia === 'alta').length
 
   return (
     <section
@@ -51,46 +60,54 @@ export function LiveEventsPanel({ events, live }: Props) {
             Esperando detecciones...
           </li>
         )}
-        {events.map((event) => (
-          <li
-            key={event.id}
-            className={`flex items-center gap-3 px-4 py-2.5 lg:px-6 ${
-              event.isAlert
-                ? 'bg-destructive/10 border-destructive border-l-2'
-                : ''
-            }`}
-          >
-            <span
-              aria-hidden="true"
-              className={`shrink-0 text-center text-sm ${
-                event.isAlert ? 'w-4' : 'text-primary w-4'
+        {events.map((event) => {
+          const esAlerta = event.nivel_relevancia === 'alta'
+          const conteo = conteoDe(event)
+          return (
+            <li
+              key={event.id}
+              className={`flex items-center gap-3 px-4 py-2.5 lg:px-6 ${
+                esAlerta ? 'bg-destructive/10 border-destructive border-l-2' : ''
               }`}
             >
-              {event.isAlert ? '⚠️' : '●'}
-            </span>
-            <time
-              dateTime={new Date(event.time).toISOString()}
-              className="text-muted-foreground shrink-0 font-mono text-xs"
-            >
-              {formatTimestamp(event.time)}
-            </time>
-            <p
-              className={`text-sm font-medium ${
-                event.isAlert ? 'text-destructive' : 'text-foreground'
-              }`}
-            >
-              {event.cows} vacas detectadas
-            </p>
-            {event.reason && (
-              <p className="text-destructive/80 truncate text-xs">
-                {event.reason}
+              <span
+                aria-hidden="true"
+                className={`shrink-0 text-center text-sm ${
+                  esAlerta ? 'w-4' : 'text-primary w-4'
+                }`}
+              >
+                {esAlerta ? '⚠️' : '●'}
+              </span>
+              <time
+                dateTime={event.timestamp_evento}
+                className="text-muted-foreground shrink-0 font-mono text-xs"
+              >
+                {new Date(event.timestamp_evento).toLocaleTimeString('es-CO', {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  second: '2-digit',
+                })}
+              </time>
+              <p
+                className={`text-sm font-medium ${
+                  esAlerta ? 'text-destructive' : 'text-foreground'
+                }`}
+              >
+                {conteo !== null
+                  ? `${conteo} animales detectados`
+                  : event.tipo ?? 'Detección'}
               </p>
-            )}
-            <span className="text-muted-foreground ml-auto hidden shrink-0 font-mono text-[11px] sm:inline">
-              DRONE-01
-            </span>
-          </li>
-        ))}
+              {event.descripcion && (
+                <p className="text-destructive/80 truncate text-xs">
+                  {event.descripcion}
+                </p>
+              )}
+              <span className="text-muted-foreground ml-auto hidden shrink-0 font-mono text-[11px] sm:inline">
+                {event.fuente ?? `#${event.id}`}
+              </span>
+            </li>
+          )
+        })}
       </ul>
     </section>
   )

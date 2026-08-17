@@ -3,21 +3,24 @@ from fastapi import APIRouter, Depends
 from app.api.v1.endpoints import (
     alertas,
     animales,
+    auth,
     dashboard,
     eventos,
     ia,
     vision,
     webhooks,
 )
-from app.core.security import validar_api_key
+from app.core.security import validar_credencial
 
 api_router = APIRouter()
 
-# Ruta EXENTA de autenticación (spec-02 §7): la consume el módulo de visión.
+# Rutas EXENTAS de autenticación (spec-02 §7): login y módulo de visión.
+api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
 api_router.include_router(eventos.ingest_router, prefix="/eventos", tags=["eventos"])
 
-# Rutas protegidas con API Key (header X-API-Key).
-_protegidas = dict(dependencies=[Depends(validar_api_key)])
+# Rutas protegidas: aceptan X-API-Key (máquina) o Bearer JWT (frontend).
+_protegidas = dict(dependencies=[Depends(validar_credencial)])
+api_router.include_router(auth.me_router, prefix="/auth", tags=["auth"], **_protegidas)
 api_router.include_router(animales.router, prefix="/animales", tags=["animales"], **_protegidas)
 api_router.include_router(eventos.router, prefix="/eventos", tags=["eventos"], **_protegidas)
 api_router.include_router(alertas.router, prefix="/alertas", tags=["alertas"], **_protegidas)

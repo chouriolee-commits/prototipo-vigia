@@ -38,3 +38,24 @@ class AnalisisIA(BaseModel):
     modelo_usado: str
     tokens_usados: int = 0
     timestamp: datetime
+
+
+class MensajeChat(BaseModel):
+    rol: str
+    contenido: str
+
+
+class SolicitudChat(BaseModel):
+    """Contrato de entrada del chat (mensajes + contexto opcional del hato)."""
+
+    mensajes: list[MensajeChat]
+    contexto_hato: ContextoHato = Field(default_factory=ContextoHato)
+
+
+class RespuestaChat(BaseModel):
+    """Contrato de salida del chat."""
+
+    respuesta: str
+    modelo_usado: str
+    tokens_usados: int = 0
+    timestamp: datetime

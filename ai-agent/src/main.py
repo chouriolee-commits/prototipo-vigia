@@ -6,7 +6,7 @@ from pydantic import ValidationError
 from src.agent import VigilAgent
 from src.config import get_config
 from src.prompt_builder import DISCLAIMER
-from src.schemas import AnalisisIA, SolicitudAnalisis
+from src.schemas import AnalisisIA, RespuestaChat, SolicitudAnalisis, SolicitudChat
 
 logging.basicConfig(level=logging.INFO)
 
@@ -20,6 +20,14 @@ app = FastAPI(title="VIGÍA Agente IA", version="1.0.0")
 async def analizar(payload: SolicitudAnalisis) -> dict:
     try:
         return await agent.analizar(payload)
+    except ValidationError as exc:
+        raise HTTPException(status_code=422, detail=exc.errors()) from exc
+
+
+@app.post("/chat", response_model=RespuestaChat)
+async def chat(payload: SolicitudChat) -> dict:
+    try:
+        return await agent.charlar(payload)
     except ValidationError as exc:
         raise HTTPException(status_code=422, detail=exc.errors()) from exc
 

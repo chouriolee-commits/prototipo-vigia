@@ -7,8 +7,8 @@ from app.db.models.animal import Animal
 from app.db.models.evento import Evento
 from app.db.session import get_db
 from app.schemas.alerta import AnalisisIA
-from app.schemas.ia import AnalizarRequest
-from app.services.ia_client import analizar_alerta, construir_solicitud
+from app.schemas.ia import AnalizarRequest, ChatRequest, ChatResponse
+from app.services.ia_client import analizar_alerta, charlar_ia, construir_solicitud
 
 router = APIRouter()
 
@@ -53,3 +53,24 @@ async def analizar_alerta_manual(
     alerta.analisis_ia = analisis.model_dump(mode="json")
     await session.commit()
     return analisis
+
+
+@router.post("/chat", response_model=ChatResponse)
+async def charlar(
+    payload: ChatRequest,
+    session: AsyncSession = Depends(get_db),
+) -> ChatResponse:
+    total, especie = await _contexto_hato(session)
+    contexto = {
+        "total_animales_registrados": total,
+        "especie_predominante": especie,
+    }
+    if not payload.contexto_hato:
+        payload.contexto_hato = contexto
+    respuesta = await charlar_ia(
+        [m.model_dump() for m in payload.mensajes],
+        payload.contexto_hato,
+    )
+    if respuesta is None:
+        raise HTTPException(status_code=502, detail="Agente IA no disponible")
+    return ChatResponse.model_validate(respuesta)

@@ -52,3 +52,18 @@ async def analizar_alerta(solicitud: dict) -> dict | None:
     except Exception:
         logger.exception("Fallo la invocación al agente IA para alerta %s", solicitud.get("alerta_id"))
         return None
+
+
+async def charlar_ia(mensajes: list[dict], contexto_hato: dict) -> dict | None:
+    """Invoca el endpoint de chat del agente IA. Devuelve None si no responde."""
+    settings = get_settings()
+    url = f"{settings.ai_agent_url.rstrip('/')}/chat"
+    payload = {"mensajes": mensajes, "contexto_hato": contexto_hato}
+    try:
+        async with httpx.AsyncClient(timeout=settings.ai_agent_timeout) as client:
+            resp = await client.post(url, json=payload)
+            resp.raise_for_status()
+            return resp.json()
+    except Exception:
+        logger.exception("Fallo la invocación de chat al agente IA")
+        return None

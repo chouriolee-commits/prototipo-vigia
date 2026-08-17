@@ -1,54 +1,57 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
-import { Video } from 'lucide-react'
-import { FloatingAlerts } from '@/components/floating-alerts'
+import { useEffect, useState } from 'react'
+import { Bell, Video } from 'lucide-react'
 import { HeroVideoFeed } from '@/components/hero-video-feed'
 import { LiveEventsPanel } from '@/components/live-events-panel'
-import { createEvent, seedEvents, type DetectionEvent } from '@/lib/vigia-events'
+import { AnalisisIaPanel } from '@/components/analisis-ia-panel'
+import { getAlertas, getEventos, videoUrl, type Alerta, type Evento } from '@/lib/api'
+
+function conteoDe(evento: Evento): number {
+  const raw = evento.datos_raw
+  if (raw && typeof raw === 'object' && 'conteo_total' in raw) {
+    const valor = raw.conteo_total
+    if (typeof valor === 'number') return valor
+  }
+  return 0
+}
 
 export function MonitorFuente() {
-  const [playing, setPlaying] = useState(true)
-  const [elapsed, setElapsed] = useState(0)
-  const [events, setEvents] = useState<DetectionEvent[]>(() => seedEvents())
-  const [alerts, setAlerts] = useState<DetectionEvent[]>([])
+  const [events, setEvents] = useState<Evento[]>([])
+  const [alerts, setAlerts] = useState<Alerta[]>([])
+  const fuenteNombre = 'video_demo.mp4'
 
-  // Reloj del reproductor.
+  // Carga inicial + polling de eventos reales y alertas pendientes.
   useEffect(() => {
-    if (!playing) return
-    const id = setInterval(() => setElapsed((s) => s + 1), 1000)
-    return () => clearInterval(id)
-  }, [playing])
-
-  // Nuevas detecciones mientras la fuente se procesa.
-  useEffect(() => {
-    if (!playing) return
-    const id = setInterval(() => {
-      const event = createEvent()
-      setEvents((prev) => [event, ...prev].slice(0, 10))
-      if (event.isAlert) setAlerts((prev) => [event, ...prev].slice(0, 3))
-    }, 4000)
-    return () => clearInterval(id)
-  }, [playing])
-
-  const dismissAlert = useCallback((id: number) => {
-    setAlerts((prev) => prev.filter((a) => a.id !== id))
+    let activo = true
+    const cargar = () => {
+      getEventos(10)
+        .then((data) => {
+          if (activo) setEvents(data)
+        })
+        .catch(() => {})
+      getAlertas({ estado: 'pendiente', limit: 10 })
+        .then((data) => {
+          if (activo) setAlerts(data)
+        })
+        .catch(() => {})
+    }
+    cargar()
+    const id = setInterval(cargar, 5000)
+    return () => {
+      activo = false
+      clearInterval(id)
+    }
   }, [])
 
   const latest = events[0]
-  const alertCount = events.filter((e) => e.isAlert).length
+  const detected = latest ? conteoDe(latest) : 0
+  const alertCount = events.filter((e) => e.nivel_relevancia === 'alta').length
+  const pending = alerts.filter((a) => a.estado === 'pendiente').length
 
   return (
     <main className="flex min-h-0 w-full flex-1 flex-col md:h-[calc(100svh-3.5rem)] md:flex-none md:overflow-hidden">
-      <HeroVideoFeed
-        playing={playing}
-        elapsed={elapsed}
-        detected={latest?.cows ?? 0}
-        onToggle={() => setPlaying((p) => !p)}
-        onRestart={() => setElapsed(0)}
-      >
-        <FloatingAlerts alerts={alerts} onDismiss={dismissAlert} />
-      </HeroVideoFeed>
+      <HeroVideoFeed src={videoUrl(fuenteNombre)} detected={detected} pendingAlerts={pending} />
 
       {/* Ficha de la fuente */}
       <section
@@ -60,11 +63,9 @@ export function MonitorFuente() {
             <Video className="size-4" aria-hidden="true" />
           </span>
           <div className="min-w-0">
-            <p className="truncate font-mono text-sm font-semibold">
-              video_demo.mp4
-            </p>
+            <p className="truncate font-mono text-sm font-semibold">{fuenteNombre}</p>
             <p className="text-muted-foreground text-[11px]">
-              Fuente local · 42.8 MB
+              Fuente del backend · streaming vía /media
             </p>
           </div>
         </div>
@@ -80,17 +81,9 @@ export function MonitorFuente() {
             <dt className="text-muted-foreground text-[10px] tracking-wide uppercase">
               Estado
             </dt>
-            <dd
-              className={`flex items-center gap-1.5 font-medium ${
-                playing ? 'text-primary' : 'text-muted-foreground'
-              }`}
-            >
-              <span
-                className={`size-1.5 rounded-full ${
-                  playing ? 'bg-primary animate-pulse' : 'bg-muted-foreground'
-                }`}
-              />
-              {playing ? 'Procesando' : 'En pausa'}
+            <dd className="text-primary flex items-center gap-1.5 font-medium">
+              <span className="bg-primary size-1.5 animate-pulse rounded-full" />
+              Procesando
             </dd>
           </div>
           <div>
@@ -103,16 +96,62 @@ export function MonitorFuente() {
             <dt className="text-muted-foreground text-[10px] tracking-wide uppercase">
               Alertas
             </dt>
-            <dd
-              className={`font-medium ${alertCount > 0 ? 'text-destructive' : ''}`}
-            >
+            <dd className={`font-medium ${alertCount > 0 ? 'text-destructive' : ''}`}>
               {alertCount}
             </dd>
           </div>
         </dl>
       </section>
 
-      <LiveEventsPanel events={events} live={playing} />
+      {/* Módulo de alertas pendientes */}
+      <section
+        aria-label="Alertas pendientes"
+        className="bg-card border-border flex max-h-[40svh] min-h-0 flex-1 flex-col overflow-hidden border-t md:max-h-none"
+      >
+        <div className="border-border flex shrink-0 flex-wrap items-center gap-x-4 gap-y-2 border-b px-4 py-3 lg:px-6">
+          <h2 className="flex items-center gap-2 text-sm font-semibold">
+            <Bell className="text-destructive size-4" aria-hidden="true" />
+            Alertas pendientes
+          </h2>
+          <p className="text-muted-foreground ml-auto font-mono text-[11px]">
+            {pending} sin revisar
+          </p>
+        </div>
+        <ul className="divide-border min-h-0 flex-1 divide-y overflow-y-auto">
+          {alerts.length === 0 && (
+            <li className="text-muted-foreground p-4 text-sm lg:px-6">
+              Sin alertas pendientes.
+            </li>
+          )}
+          {alerts.map((alert) => (
+            <li
+              key={alert.id}
+              className={`flex flex-wrap items-center gap-3 px-4 py-2.5 lg:px-6 ${
+                alert.nivel === 'alta' ? 'bg-destructive/10 border-destructive border-l-2' : ''
+              }`}
+            >
+              <span aria-hidden="true" className="text-sm">
+                {alert.nivel === 'alta' ? '⚠️' : alert.nivel === 'media' ? '🟠' : '🟢'}
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className={`text-sm font-medium ${alert.nivel === 'alta' ? 'text-destructive' : ''}`}>
+                  {alert.tipo_alerta.replaceAll('_', ' ')}
+                </p>
+                {alert.descripcion && (
+                  <p className="text-muted-foreground truncate text-xs">{alert.descripcion}</p>
+                )}
+              </div>
+              <span className="text-muted-foreground shrink-0 font-mono text-[11px]">
+                ALT-{String(alert.id).padStart(4, '0')}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <LiveEventsPanel events={events} live />
+
+      <AnalisisIaPanel />
     </main>
   )
 }

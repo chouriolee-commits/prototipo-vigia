@@ -1,77 +1,74 @@
 'use client'
 
-import { Maximize2, Pause, Play, RotateCcw, Volume2 } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { Bell, Maximize2, Pause, Play, RotateCcw, Volume2, VolumeX } from 'lucide-react'
 import { formatTimecode } from '@/lib/vigia-events'
 
-const DURATION = 180
-
-/** Cajas de detección simuladas sobre el fotograma. */
-const BOXES = [
-  { left: '12%', top: '54%', width: '8%', height: '17%', conf: 0.97 },
-  { left: '33%', top: '28%', width: '7%', height: '15%', conf: 0.93 },
-  { left: '56%', top: '61%', width: '9%', height: '18%', conf: 0.89 },
-  { left: '71%', top: '22%', width: '7%', height: '16%', conf: 0.91 },
-  { left: '44%', top: '74%', width: '8%', height: '15%', conf: 0.85 },
-  { left: '83%', top: '48%', width: '7%', height: '15%', conf: 0.82 },
-]
-
 type Props = {
-  playing: boolean
-  elapsed: number
+  src: string
   detected: number
-  onToggle: () => void
-  onRestart: () => void
-  children?: React.ReactNode
+  pendingAlerts: number
 }
 
-export function HeroVideoFeed({
-  playing,
-  elapsed,
-  detected,
-  onToggle,
-  onRestart,
-  children,
-}: Props) {
-  const progress = Math.min(100, ((elapsed % DURATION) / DURATION) * 100)
+export function HeroVideoFeed({ src, detected, pendingAlerts }: Props) {
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const [playing, setPlaying] = useState(true)
+  const [muted, setMuted] = useState(true)
+  const [elapsed, setElapsed] = useState(0)
+  const [duration, setDuration] = useState(0)
+
+  // Reproducción/pausa reflejada en el elemento <video>.
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video) return
+    if (playing) void video.play()
+    else video.pause()
+  }, [playing])
+
+  const progress = duration > 0 ? (elapsed / duration) * 100 : 0
+
+  function onTimeUpdate() {
+    const video = videoRef.current
+    if (video) setElapsed(video.currentTime)
+  }
+
+  function onLoadedMetadata() {
+    const video = videoRef.current
+    if (video) setDuration(video.duration || 0)
+  }
+
+  function restart() {
+    const video = videoRef.current
+    if (!video) return
+    video.currentTime = 0
+    void video.play()
+    setPlaying(true)
+  }
+
+  function toggleMute() {
+    const video = videoRef.current
+    if (!video) return
+    video.muted = !video.muted
+    setMuted(video.muted)
+  }
 
   return (
     <section
       aria-label="Fuente de video en vivo"
       className="relative h-[60svh] min-h-[380px] w-full overflow-hidden bg-black"
     >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="/drone-pasture-frame.png"
-        alt="Vista aérea de dron mostrando un potrero con ganado disperso"
-        className={`size-full object-cover transition-transform duration-[9000ms] ease-linear ${
-          playing ? 'scale-110' : 'scale-100'
-        }`}
+      <video
+        ref={videoRef}
+        src={src}
+        muted={muted}
+        autoPlay
+        loop
+        playsInline
+        preload="metadata"
+        onTimeUpdate={onTimeUpdate}
+        onLoadedMetadata={onLoadedMetadata}
+        className="absolute inset-0 size-full object-cover"
       />
-
-      {/* Cajas de detección */}
-      <div aria-hidden="true" className="absolute inset-0">
-        {BOXES.map((box, i) => (
-          <div
-            key={box.left}
-            className={`absolute rounded-sm border-2 transition-opacity duration-500 ${
-              playing
-                ? 'border-primary animate-pulse opacity-100'
-                : 'border-primary/50 opacity-40'
-            }`}
-            style={{
-              left: box.left,
-              top: box.top,
-              width: box.width,
-              height: box.height,
-              animationDelay: `${i * 0.3}s`,
-            }}
-          >
-            <span className="bg-primary text-primary-foreground absolute -top-5 left-0 rounded px-1 font-mono text-[10px] leading-4 font-semibold">
-              vaca {box.conf.toFixed(2)}
-            </span>
-          </div>
-        ))}
-      </div>
 
       {/* Degradados para legibilidad de los overlays */}
       <div
@@ -91,22 +88,27 @@ export function HeroVideoFeed({
         </span>
         <span className="border-primary/40 bg-primary/15 text-primary inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-medium backdrop-blur-sm">
           <span className="bg-primary size-1.5 animate-pulse rounded-full" />
-          Procesando...
+          {playing ? 'Procesando...' : 'Pausado'}
         </span>
         <span className="bg-background/70 text-muted-foreground hidden rounded-full px-3 py-1 font-mono text-[11px] backdrop-blur-sm sm:inline">
-          DRONE-01 · 1920×1080 · 30 fps
+          DRONE-01 · 720p
         </span>
       </div>
 
-      {/* Tarjetas de alerta flotantes (arriba a la derecha) */}
-      <div className="absolute top-4 right-4 z-20 lg:top-5 lg:right-6">
-        {children}
-      </div>
+      {/* Badge discreto de alertas pendientes (arriba a la derecha) */}
+      {pendingAlerts > 0 && (
+        <div className="absolute top-4 right-4 z-20 lg:top-5 lg:right-6">
+          <span className="bg-destructive/90 text-destructive-foreground inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold shadow-lg backdrop-blur-sm">
+            <Bell className="size-3.5" aria-hidden="true" />
+            {pendingAlerts} alertas pendientes
+          </span>
+        </div>
+      )}
 
       {playing ? null : (
         <button
           type="button"
-          onClick={onToggle}
+          onClick={() => setPlaying(true)}
           className="bg-background/40 absolute inset-0 z-10 flex items-center justify-center backdrop-blur-[2px] transition-colors"
         >
           <span className="bg-primary text-primary-foreground flex size-16 items-center justify-center rounded-full shadow-lg">
@@ -120,7 +122,7 @@ export function HeroVideoFeed({
       <div className="absolute inset-x-0 bottom-0 z-20 flex flex-col gap-3 px-4 pb-4 lg:px-6 lg:pb-5">
         <div className="bg-foreground/20 h-1 w-full overflow-hidden rounded-full">
           <div
-            className="bg-primary h-full rounded-full transition-[width] duration-1000 ease-linear"
+            className="bg-primary h-full rounded-full transition-[width] duration-300 ease-linear"
             style={{ width: `${progress}%` }}
           />
         </div>
@@ -128,7 +130,7 @@ export function HeroVideoFeed({
         <div className="flex items-center gap-3">
           <button
             type="button"
-            onClick={onToggle}
+            onClick={() => setPlaying((p) => !p)}
             aria-pressed={playing}
             className="bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-ring flex size-11 shrink-0 items-center justify-center rounded-full transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-black focus-visible:outline-none"
           >
@@ -142,20 +144,32 @@ export function HeroVideoFeed({
 
           <button
             type="button"
-            onClick={onRestart}
+            onClick={restart}
             className="text-muted-foreground hover:bg-background/60 hover:text-foreground flex size-9 shrink-0 items-center justify-center rounded-full transition-colors"
           >
             <RotateCcw className="size-4" aria-hidden="true" />
             <span className="sr-only">Reiniciar</span>
           </button>
 
+          <button
+            type="button"
+            onClick={toggleMute}
+            aria-pressed={!muted}
+            className="text-muted-foreground hover:bg-background/60 hover:text-foreground flex size-9 shrink-0 items-center justify-center rounded-full transition-colors"
+          >
+            {muted ? (
+              <VolumeX className="size-4" aria-hidden="true" />
+            ) : (
+              <Volume2 className="size-4" aria-hidden="true" />
+            )}
+            <span className="sr-only">{muted ? 'Activar sonido' : 'Silenciar'}</span>
+          </button>
+
           <p className="font-mono text-xs">
-            <span className="text-foreground">
-              {formatTimecode(elapsed % DURATION)}
-            </span>
+            <span className="text-foreground">{formatTimecode(elapsed)}</span>
             <span className="text-muted-foreground">
               {' / '}
-              {formatTimecode(DURATION)}
+              {formatTimecode(duration)}
             </span>
           </p>
 
@@ -164,13 +178,6 @@ export function HeroVideoFeed({
           </span>
 
           <div className="ml-auto flex items-center gap-1">
-            <button
-              type="button"
-              className="text-muted-foreground hover:bg-background/60 hover:text-foreground flex size-9 items-center justify-center rounded-full transition-colors"
-            >
-              <Volume2 className="size-4" aria-hidden="true" />
-              <span className="sr-only">Volumen</span>
-            </button>
             <button
               type="button"
               className="text-muted-foreground hover:bg-background/60 hover:text-foreground flex size-9 items-center justify-center rounded-full transition-colors"

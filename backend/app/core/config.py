@@ -19,6 +19,12 @@ class Settings(BaseSettings):
 
     api_key: str = "dev-api-key"
 
+    auth_email: str = "admin@vigia.co"
+    auth_password_hash: str = ""
+    auth_password: str = "Vigia123!"
+    secret_key: str = "dev-secret-key-vigia-cambiar-en-produccion-32-bytes-min"
+    token_expire_minutes: int = 60
+
     ai_agent_url: str = "http://localhost:8001"
     ai_agent_timeout: float = 10.0
 

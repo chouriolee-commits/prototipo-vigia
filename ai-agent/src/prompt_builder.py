@@ -61,3 +61,17 @@ def analisis_fallback(alerta_id: int, modelo: str) -> dict:
         "tokens_usados": 0,
         "timestamp": datetime.now(timezone.utc),
     }
+
+
+def construir_contexto_hato(contexto) -> str:
+    return (
+        f"- Animales registrados: {contexto.total_animales_registrados}\n"
+        f"- Especie predominante: {contexto.especie_predominante}"
+    )
+
+
+def chat_fallback(modelo: str) -> str:
+    return (
+        "No fue posible conectar con el modelo de IA en este momento. "
+        "Intenta nuevamente en unos segundos."
+    )
