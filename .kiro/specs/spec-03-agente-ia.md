@@ -23,12 +23,12 @@ Habla de patrones, comportamientos anómalos, cambios de actividad y eventos pot
 |------------|------------|
 | Framework web | FastAPI |
 | LLM API | Groq Cloud |
-| Modelo LLM | `llama-3.1-8b-instant` |
+| Modelo LLM | `openai/gpt-oss-20b` |
 | Cliente Groq | `groq` Python SDK |
 | Servidor | Uvicorn |
 
 **Justificación del modelo:**  
-`llama-3.1-8b-instant` es suficiente para el problema. No se requiere un modelo de 70B para interpretar eventos estructurados y generar texto descriptivo en español. El tier gratuito de Groq (30 RPM, 250K TPM) es adecuado para un simulacro de hackathon.
+`openai/gpt-oss-20b` es un modelo liviano y eficiente de Groq, suficiente para interpretar eventos estructurados y generar texto descriptivo en español. Originalmente se eligió `llama-3.1-8b-instant`, pero ese modelo ya no está disponible en la cuenta de Groq (lista de modelos consultada el 2026-08-17). El tier gratuito de Groq (30 RPM, 250K TPM) es adecuado para un simulacro de hackathon.
 
 ---
 
@@ -93,7 +93,7 @@ El agente devuelve exactamente este JSON:
   "justificacion": "El patrón de separación sostenida puede estar asociado a malestar, inicio de parto, o simplemente exploración del área. La confianza de detección es alta (0.87), lo que reduce la posibilidad de un falso positivo.",
   "recomendacion": "Se sugiere verificar visualmente el estado del animal en las próximas 1-2 horas.",
   "disclaimer": "Este análisis es un apoyo a la toma de decisiones del productor. No constituye un diagnóstico veterinario. Ante cualquier duda, consulte a un médico veterinario.",
-  "modelo_usado": "llama-3.1-8b-instant",
+  "modelo_usado": "openai/gpt-oss-20b",
   "tokens_usados": 312,
   "timestamp": "2026-08-16T10:30:08Z"
 }
@@ -210,7 +210,7 @@ ai-agent/
 ```env
 AI_AGENT_PORT=8001
 GROQ_API_KEY=<tu_api_key_de_groq>
-GROQ_MODEL=llama-3.1-8b-instant
+GROQ_MODEL=openai/gpt-oss-20b
 GROQ_MAX_TOKENS=512
 GROQ_TEMPERATURE=0.3
 AI_REQUEST_TIMEOUT=10

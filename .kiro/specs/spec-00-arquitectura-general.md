@@ -38,7 +38,7 @@ Detecta patrones, comportamientos anómalos y cambios de actividad que justifica
         ▼
 [Base de datos]                        ← MySQL
         │
-        ├──────────────────────────────►[Agente IA]   ← Groq API / llama-3.1-8b-instant
+        ├──────────────────────────────►[Agente IA]   ← Groq API / openai/gpt-oss-20b
         │                                     │  Produce: AnalisisIA (JSON)
         │◄─────────────────────────────────────
         │
@@ -190,7 +190,7 @@ Producido por el Agente IA. Se almacena en la base de datos asociado a una alert
   "justificacion": "El comportamiento es consistente con malestar o inicio de parto. Se recomienda inspección visual.",
   "recomendacion": "Verificar estado del animal en las próximas 2 horas.",
   "disclaimer": "Este análisis es apoyo a la toma de decisiones. No constituye un diagnóstico veterinario.",
-  "modelo_usado": "llama-3.1-8b-instant",
+  "modelo_usado": "openai/gpt-oss-20b",
   "timestamp": "2026-08-16T10:30:08Z"
 }
 ```
@@ -219,8 +219,8 @@ Producido por el Agente IA. Se almacena en la base de datos asociado a una alert
 **Decisión:** Usar el modelo `yolov8n.pt` de Ultralytics sin fine-tuning.  
 **Justificación:** COCO incluye clases `cow`, `horse`, `sheep`. Suficiente para el MVP. Evita el costo de preparar un dataset personalizado. El modelo nano es el más rápido y ligero.
 
-### 7.3 Groq API — llama-3.1-8b-instant
-**Decisión:** Usar la API de Groq con el modelo `llama-3.1-8b-instant`.  
+### 7.3 Groq API — openai/gpt-oss-20b
+**Decisión:** Usar la API de Groq con el modelo `openai/gpt-oss-20b`.  
 **Justificación:** Tier gratuito funcional (30 RPM, 250K TPM). Latencia muy baja (~100ms). Suficiente capacidad para interpretar eventos estructurados y generar análisis de comportamiento en lenguaje natural. No se requiere un modelo más grande para este problema.
 
 ### 7.4 Agente IA como servicio separado
@@ -262,7 +262,7 @@ SECRET_KEY=<secreto>
 # Agente IA
 AI_AGENT_PORT=8001
 GROQ_API_KEY=<tu_api_key_de_groq>
-GROQ_MODEL=llama-3.1-8b-instant
+GROQ_MODEL=openai/gpt-oss-20b
 
 # Visión
 VISION_PORT=8002

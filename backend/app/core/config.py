@@ -25,6 +25,9 @@ class Settings(BaseSettings):
     n8n_webhook_url: str = "http://localhost:5678/webhook/vigia-alerta"
     n8n_enabled: bool = False
 
+    vision_source: str = "samples/video_demo.mp4"
+    vision_samples_dir: str = "../vision/samples"
+
 
 @lru_cache
 def get_settings() -> Settings:

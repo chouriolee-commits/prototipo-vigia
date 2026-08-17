@@ -1,11 +1,7 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
-import { Inter, JetBrains_Mono } from 'next/font/google'
 import { VigiaNavbar } from '@/components/vigia-navbar'
 import './globals.css'
-
-const _inter = Inter({ subsets: ['latin'] })
-const _mono = JetBrains_Mono({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'VIGÍA — Visión Inteligente para la Gestión y Vigilancia Animal',
@@ -32,8 +28,8 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  colorScheme: 'dark',
-  themeColor: '#0f172a',
+  colorScheme: 'light',
+  themeColor: '#f4f7fb',
 }
 
 export default function RootLayout({
@@ -42,8 +38,8 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="es" className="dark bg-background">
-      <body className="bg-background text-foreground font-sans antialiased">
+    <html lang="es" className="bg-background">
+      <body className="bg-background text-foreground antialiased">
         <div className="flex min-h-svh w-full flex-col">
           <VigiaNavbar />
           <div className="flex min-h-0 w-full flex-1 flex-col">{children}</div>

@@ -10,13 +10,8 @@ import { createEvent, seedEvents, type DetectionEvent } from '@/lib/vigia-events
 export function MonitorFuente() {
   const [playing, setPlaying] = useState(true)
   const [elapsed, setElapsed] = useState(0)
-  const [events, setEvents] = useState<DetectionEvent[]>([])
+  const [events, setEvents] = useState<DetectionEvent[]>(() => seedEvents())
   const [alerts, setAlerts] = useState<DetectionEvent[]>([])
-
-  // Historial inicial en el cliente (evita desajustes de hidratación).
-  useEffect(() => {
-    setEvents(seedEvents())
-  }, [])
 
   // Reloj del reproductor.
   useEffect(() => {
