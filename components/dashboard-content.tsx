@@ -127,9 +127,9 @@ export function DashboardContent() {
           href: '/alertas',
         },
         {
-          label: 'Sistema saludable',
-          value: error ? '—' : 'Online',
-          detail: error ? 'sin conexión' : 'backend conectado',
+          label: 'Estado del sistema',
+          value: error ? '—' : 'Operativo',
+          detail: error ? 'con revisión' : 'monitoreo activo',
           icon: ShieldCheck,
           tone: 'bg-emerald-50 text-emerald-700',
           href: '/monitor',
@@ -238,7 +238,7 @@ export function DashboardContent() {
               <ul className="mt-4 space-y-3 text-sm text-slate-700">
                 {error ? (
                   <li className="rounded-xl border border-white/80 bg-white/60 px-3 py-2">
-                    No hay conexión con el backend. Verifica que esté en ejecución.
+                    No hay conexión con el sistema de monitoreo. Verifica la conexión.
                   </li>
                 ) : (
                   <>

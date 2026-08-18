@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { Bell, Maximize2, Pause, Play, RotateCcw, Volume2, VolumeX } from 'lucide-react'
+import { Bell, Maximize2, Minimize2, Pause, Play, RotateCcw, Volume2, VolumeX } from 'lucide-react'
 import { formatTimecode } from '@/lib/vigia-events'
 
 type Props = {
@@ -12,10 +12,12 @@ type Props = {
 
 export function HeroVideoFeed({ src, detected, pendingAlerts }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null)
+  const sectionRef = useRef<HTMLElement>(null)
   const [playing, setPlaying] = useState(true)
   const [muted, setMuted] = useState(true)
   const [elapsed, setElapsed] = useState(0)
   const [duration, setDuration] = useState(0)
+  const [fullscreen, setFullscreen] = useState(false)
 
   // Reproducción/pausa reflejada en el elemento <video>.
   useEffect(() => {
@@ -24,6 +26,25 @@ export function HeroVideoFeed({ src, detected, pendingAlerts }: Props) {
     if (playing) void video.play()
     else video.pause()
   }, [playing])
+
+  useEffect(() => {
+    if (!sectionRef.current) return
+    function onChange() {
+      setFullscreen(Boolean(document.fullscreenElement))
+    }
+    document.addEventListener('fullscreenchange', onChange)
+    return () => document.removeEventListener('fullscreenchange', onChange)
+  }, [])
+
+  function toggleFullscreen() {
+    const el = sectionRef.current
+    if (!el) return
+    if (document.fullscreenElement) {
+      void document.exitFullscreen().catch(() => {})
+    } else {
+      void el.requestFullscreen().catch(() => {})
+    }
+  }
 
   const progress = duration > 0 ? (elapsed / duration) * 100 : 0
 
@@ -54,8 +75,9 @@ export function HeroVideoFeed({ src, detected, pendingAlerts }: Props) {
 
   return (
     <section
+      ref={sectionRef}
       aria-label="Fuente de video en vivo"
-      className="relative h-[60svh] min-h-[380px] w-full overflow-hidden bg-black"
+      className="relative h-[42svh] min-h-[300px] w-full shrink-0 overflow-hidden rounded-xl bg-black lg:h-[48svh]"
     >
       <video
         ref={videoRef}
@@ -180,10 +202,16 @@ export function HeroVideoFeed({ src, detected, pendingAlerts }: Props) {
           <div className="ml-auto flex items-center gap-1">
             <button
               type="button"
+              onClick={toggleFullscreen}
+              aria-pressed={fullscreen}
               className="text-muted-foreground hover:bg-background/60 hover:text-foreground flex size-9 items-center justify-center rounded-full transition-colors"
             >
-              <Maximize2 className="size-4" aria-hidden="true" />
-              <span className="sr-only">Pantalla completa</span>
+              {fullscreen ? (
+                <Minimize2 className="size-4" aria-hidden="true" />
+              ) : (
+                <Maximize2 className="size-4" aria-hidden="true" />
+              )}
+              <span className="sr-only">{fullscreen ? 'Salir de pantalla completa' : 'Pantalla completa'}</span>
             </button>
           </div>
         </div>

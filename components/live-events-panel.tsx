@@ -24,9 +24,9 @@ export function LiveEventsPanel({ events, live }: Props) {
   return (
     <section
       aria-label="Eventos en vivo"
-      className="bg-card border-border flex max-h-[55svh] min-h-0 flex-1 flex-col overflow-hidden border-t md:max-h-none"
+      className="bg-card border-border flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border"
     >
-      <div className="border-border flex shrink-0 flex-wrap items-center gap-x-4 gap-y-2 border-b px-4 py-3 lg:px-6">
+      <div className="border-border flex shrink-0 flex-wrap items-center gap-x-4 gap-y-2 border-b px-4 py-3 lg:px-5">
         <h2 className="flex items-center gap-2 text-sm font-semibold">
           <Activity className="text-primary size-4" aria-hidden="true" />
           Eventos en Vivo
@@ -56,7 +56,7 @@ export function LiveEventsPanel({ events, live }: Props) {
         className="divide-border min-h-0 flex-1 divide-y overflow-y-auto"
       >
         {events.length === 0 && (
-          <li className="text-muted-foreground p-4 text-sm lg:px-6">
+          <li className="text-muted-foreground p-4 text-sm lg:px-5">
             Esperando detecciones...
           </li>
         )}
@@ -66,7 +66,7 @@ export function LiveEventsPanel({ events, live }: Props) {
           return (
             <li
               key={event.id}
-              className={`flex items-center gap-3 px-4 py-2.5 lg:px-6 ${
+              className={`flex items-center gap-3 px-4 py-2.5 lg:px-5 ${
                 esAlerta ? 'bg-destructive/10 border-destructive border-l-2' : ''
               }`}
             >

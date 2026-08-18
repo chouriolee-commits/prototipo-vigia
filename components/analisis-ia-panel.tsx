@@ -44,7 +44,7 @@ export function AnalisisIaPanel() {
       })
       .catch(() => {
         setError(
-          'No se pudo obtener el análisis. Verifica que el agente IA esté activo en :8001.',
+          'No se pudo obtener el análisis. Intenta nuevamente en unos segundos.',
         )
       })
       .finally(() => setCargando(false))
@@ -53,9 +53,9 @@ export function AnalisisIaPanel() {
   return (
     <section
       aria-label="Análisis de alertas con IA"
-      className="bg-card border-border flex max-h-[55svh] min-h-0 flex-1 flex-col overflow-hidden border-t md:max-h-none"
+      className="bg-card border-border flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border"
     >
-      <div className="border-border flex shrink-0 flex-wrap items-center gap-x-4 gap-y-2 border-b px-4 py-3 lg:px-6">
+      <div className="border-border flex shrink-0 flex-wrap items-center gap-x-4 gap-y-2 border-b px-4 py-3 lg:px-5">
         <h2 className="flex items-center gap-2 text-base font-semibold lg:text-lg">
           <BrainCircuit className="text-primary size-5" aria-hidden="true" />
           Análisis con IA
@@ -92,7 +92,7 @@ export function AnalisisIaPanel() {
         </div>
       </div>
 
-      <div className="min-h-0 flex-1 overflow-y-auto p-4 lg:p-6">
+      <div className="min-h-0 flex-1 overflow-y-auto p-4 lg:p-5">
         {error && (
           <p className="mb-4 flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
             <TriangleAlert className="size-5 shrink-0" aria-hidden="true" />

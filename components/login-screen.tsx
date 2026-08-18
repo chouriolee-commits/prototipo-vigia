@@ -61,7 +61,6 @@ export function LoginScreen() {
                 <small>Monitoreo Inteligente</small>
               </span>
             </Link>
-            <span className="visual-status"><i /> Sistema en línea</span>
           </div>
 
           <div className="visual-copy">

@@ -110,11 +110,6 @@ export function VigiaNavbar() {
         </nav>
 
         <div className="ml-auto flex items-center gap-2 sm:gap-3">
-          <span className="hidden items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-[10px] font-semibold tracking-[0.14em] text-emerald-700 sm:inline-flex">
-            <span className="size-1.5 animate-pulse rounded-full bg-emerald-500" />
-            SISTEMA ACTIVO
-          </span>
-
           <button
             type="button"
             onClick={() => setChatOpen(true)}

@@ -1,0 +1,1 @@
+# Módulo de visión artificial VIGÍA (spec-01)

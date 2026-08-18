@@ -50,13 +50,18 @@ export function MonitorFuente() {
   const pending = alerts.filter((a) => a.estado === 'pendiente').length
 
   return (
-    <main className="flex min-h-0 w-full flex-1 flex-col md:h-[calc(100svh-3.5rem)] md:flex-none md:overflow-hidden">
-      <HeroVideoFeed src={videoUrl(fuenteNombre)} detected={detected} pendingAlerts={pending} />
+    <main className="flex min-h-0 w-full flex-1 flex-col gap-5 p-4 md:max-h-[calc(100svh-65px)] md:overflow-hidden lg:gap-6 lg:p-6">
+      {/* Video a lo ancho arriba */}
+      <HeroVideoFeed
+        src={videoUrl(fuenteNombre)}
+        detected={detected}
+        pendingAlerts={pending}
+      />
 
       {/* Ficha de la fuente */}
       <section
         aria-label="Información de la fuente"
-        className="bg-background border-border flex flex-wrap items-center gap-x-6 gap-y-3 border-t px-4 py-3 lg:px-6"
+        className="bg-card border-border flex shrink-0 flex-wrap items-center gap-x-6 gap-y-3 rounded-xl border px-4 py-3 lg:px-5"
       >
         <div className="flex items-center gap-3">
           <span className="bg-secondary text-primary flex size-9 shrink-0 items-center justify-center rounded-lg">
@@ -65,7 +70,7 @@ export function MonitorFuente() {
           <div className="min-w-0">
             <p className="truncate font-mono text-sm font-semibold">{fuenteNombre}</p>
             <p className="text-muted-foreground text-[11px]">
-              Fuente del backend · streaming vía /media
+              Fuente en transmisión · análisis en tiempo real
             </p>
           </div>
         </div>
@@ -103,55 +108,59 @@ export function MonitorFuente() {
         </dl>
       </section>
 
-      {/* Módulo de alertas pendientes */}
-      <section
-        aria-label="Alertas pendientes"
-        className="bg-card border-border flex max-h-[40svh] min-h-0 flex-1 flex-col overflow-hidden border-t md:max-h-none"
-      >
-        <div className="border-border flex shrink-0 flex-wrap items-center gap-x-4 gap-y-2 border-b px-4 py-3 lg:px-6">
-          <h2 className="flex items-center gap-2 text-sm font-semibold">
-            <Bell className="text-destructive size-4" aria-hidden="true" />
-            Alertas pendientes
-          </h2>
-          <p className="text-muted-foreground ml-auto font-mono text-[11px]">
-            {pending} sin revisar
-          </p>
-        </div>
-        <ul className="divide-border min-h-0 flex-1 divide-y overflow-y-auto">
-          {alerts.length === 0 && (
-            <li className="text-muted-foreground p-4 text-sm lg:px-6">
-              Sin alertas pendientes.
-            </li>
-          )}
-          {alerts.map((alert) => (
-            <li
-              key={alert.id}
-              className={`flex flex-wrap items-center gap-3 px-4 py-2.5 lg:px-6 ${
-                alert.nivel === 'alta' ? 'bg-destructive/10 border-destructive border-l-2' : ''
-              }`}
-            >
-              <span aria-hidden="true" className="text-sm">
-                {alert.nivel === 'alta' ? '⚠️' : alert.nivel === 'media' ? '🟠' : '🟢'}
-              </span>
-              <div className="min-w-0 flex-1">
-                <p className={`text-sm font-medium ${alert.nivel === 'alta' ? 'text-destructive' : ''}`}>
-                  {alert.tipo_alerta.replaceAll('_', ' ')}
-                </p>
-                {alert.descripcion && (
-                  <p className="text-muted-foreground truncate text-xs">{alert.descripcion}</p>
-                )}
-              </div>
-              <span className="text-muted-foreground shrink-0 font-mono text-[11px]">
-                ALT-{String(alert.id).padStart(4, '0')}
-              </span>
-            </li>
-          ))}
-        </ul>
-      </section>
+      {/* Paneles organizados en grid: alertas, eventos y análisis */}
+      <div className="grid min-h-0 flex-1 auto-rows-fr grid-cols-1 gap-5 lg:grid-cols-3 lg:gap-6">
+        <section
+          aria-label="Alertas pendientes"
+          className="bg-card border-border flex min-h-0 flex-col overflow-hidden rounded-xl border"
+        >
+          <div className="border-border flex shrink-0 flex-wrap items-center gap-x-4 gap-y-2 border-b px-4 py-3 lg:px-5">
+            <h2 className="flex items-center gap-2 text-sm font-semibold">
+              <Bell className="text-destructive size-4" aria-hidden="true" />
+              Alertas pendientes
+            </h2>
+            <p className="text-muted-foreground ml-auto font-mono text-[11px]">
+              {pending} sin revisar
+            </p>
+          </div>
+          <ul className="divide-border min-h-0 flex-1 divide-y overflow-y-auto">
+            {alerts.length === 0 && (
+              <li className="text-muted-foreground p-4 text-sm lg:px-5">
+                Sin alertas pendientes.
+              </li>
+            )}
+            {alerts.map((alert) => (
+              <li
+                key={alert.id}
+                className={`flex flex-wrap items-center gap-3 px-4 py-2.5 lg:px-5 ${
+                  alert.nivel === 'alta' ? 'bg-destructive/10 border-destructive border-l-2' : ''
+                }`}
+              >
+                <span aria-hidden="true" className="text-sm">
+                  {alert.nivel === 'alta' ? '⚠️' : alert.nivel === 'media' ? '🟠' : '🟢'}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p
+                    className={`text-sm font-medium ${alert.nivel === 'alta' ? 'text-destructive' : ''}`}
+                  >
+                    {alert.tipo_alerta.replaceAll('_', ' ')}
+                  </p>
+                  {alert.descripcion && (
+                    <p className="text-muted-foreground truncate text-xs">{alert.descripcion}</p>
+                  )}
+                </div>
+                <span className="text-muted-foreground shrink-0 font-mono text-[11px]">
+                  ALT-{String(alert.id).padStart(4, '0')}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
 
-      <LiveEventsPanel events={events} live />
+        <LiveEventsPanel events={events} live />
 
-      <AnalisisIaPanel />
+        <AnalisisIaPanel />
+      </div>
     </main>
   )
 }

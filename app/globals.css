@@ -117,19 +117,21 @@
   min-height: 100svh;
   display: grid;
   place-items: center;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
   padding: clamp(16px, 3vw, 42px);
   position: relative;
   background: #f7f8fc;
 }
 
-.login-ambient { position: absolute; border-radius: 999px; filter: blur(3px); pointer-events: none; }
+.login-ambient { position: fixed; border-radius: 999px; filter: blur(3px); pointer-events: none; }
 .login-ambient-one { width: 42rem; height: 42rem; left: -20rem; top: -18rem; background: radial-gradient(circle, rgba(129, 107, 255, .17), transparent 68%); }
 .login-ambient-two { width: 33rem; height: 33rem; right: -16rem; bottom: -17rem; background: radial-gradient(circle, rgba(78, 130, 250, .11), transparent 68%); }
 
 .login-shell {
   width: min(1190px, 100%);
   min-height: min(760px, calc(100svh - 42px));
+  margin: auto;
   position: relative;
   z-index: 1;
   display: grid;
@@ -157,7 +159,7 @@
 .visual-copy h1 { max-width: 430px; margin: 12px 0; font-size: clamp(29px, 3vw, 43px); line-height: 1.08; letter-spacing: -.045em; font-weight: 750; }
 .visual-copy p { margin: 0; color: rgba(243,245,255,.75); font-size: 14px; line-height: 1.6; }
 
-.pasture-frame { position: absolute; z-index: 1; right: -4px; bottom: 37px; left: 25px; height: 45%; overflow: hidden; border: 1px solid rgba(255,255,255,.30); border-radius: 22px; background: #203a2a; box-shadow: 0 20px 35px rgba(26, 21, 93, .2); }
+.pasture-frame { position: relative; z-index: 1; flex: 1 1 auto; min-height: 0; margin: 8px 18px 37px; overflow: hidden; border: 1px solid rgba(255,255,255,.30); border-radius: 22px; background: #203a2a; box-shadow: 0 20px 35px rgba(26, 21, 93, .2); }
 .pasture-image { object-fit: cover; object-position: center 62%; filter: saturate(.84) contrast(1.02); transform: scale(1.03); }
 .pasture-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(25,17,93,.16), rgba(12,19,39,.2)), linear-gradient(90deg, rgba(61,46,197,.18), transparent 42%); }
 .scan-cone { position: absolute; top: 17%; left: 47%; width: 38%; height: 76%; opacity: .27; clip-path: polygon(46% 0, 54% 0, 100% 100%, 0 100%); background: linear-gradient(to bottom, rgba(184,212,255,.7), rgba(75,109,255,.08)); transform: rotate(-7deg); }
@@ -182,4 +184,5 @@
 @keyframes scan-pulse { 0%,100% { opacity: .25; transform: perspective(100px) rotateX(58deg) scale(.86); } 50% { opacity: .74; transform: perspective(100px) rotateX(58deg) scale(1.05); } }
 
 @media (max-width: 900px) { .login-page { padding: 0; }.login-shell { min-height: 100svh; border: 0; border-radius: 0; grid-template-columns: 1fr; }.login-visual { display: none; }.login-form-panel { min-height: 100svh; padding: 35px 26px 25px; }.mobile-brand { display: inline-flex; }.form-wrap { margin: auto; }.secure-connection { margin-top: 25px; } }
-@media (max-height: 740px) and (min-width: 901px) { .login-shell, .login-visual, .login-form-panel { min-height: 620px; }.visual-topbar { padding: 27px 32px; }.visual-copy { padding-top: 14px; }.pasture-frame { height: 43%; }.form-heading { margin-bottom: 20px; }.field-wrap { margin-bottom: 13px; }.login-submit { margin-top: 18px; }.login-divider { margin: 17px 0 13px; } }
+@media (max-height: 740px) and (min-width: 901px) { .login-shell, .login-visual, .login-form-panel { height: min(620px, calc(100svh - 40px)); min-height: 0; }.login-page { padding: clamp(6px, 1vw, 12px); }.login-form-panel { overflow-y: auto; }.form-wrap { min-height: 0; }.visual-topbar { padding: 27px 32px; }.visual-copy { padding-top: 14px; }.pasture-frame { margin-top: 4px; }.form-heading { margin-bottom: 20px; }.field-wrap { margin-bottom: 13px; }.login-submit { margin-top: 18px; }.login-divider { margin: 17px 0 13px; } }
+@media (max-height: 620px) and (min-width: 901px) { .login-page { padding: 8px; }.login-shell, .login-visual, .login-form-panel { height: calc(100svh - 16px); }.login-form-panel { padding-top: 40px; }.visual-topbar { padding: 18px 24px; }.visual-copy { padding: 10px 24px 20px; }.form-heading { margin-bottom: 14px; }.field-wrap { margin-bottom: 10px; }.login-submit { margin-top: 12px; }.login-divider { margin: 12px 0 10px; }.secure-connection { margin-top: 14px; } }

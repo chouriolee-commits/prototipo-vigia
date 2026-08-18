@@ -6,6 +6,6 @@ export default defineConfig([
   ...nextVitals,
   ...nextTypescript,
   {
-    ignores: ['node_modules/**', '.next/**', 'backend/**'],
+    ignores: ['node_modules/**', '.next/**', 'backend/**', 'ai-agent/**', 'vision/**'],
   },
 ])
