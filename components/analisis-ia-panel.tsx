@@ -53,7 +53,7 @@ export function AnalisisIaPanel() {
   return (
     <section
       aria-label="Análisis de alertas con IA"
-      className="bg-card border-border flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border"
+      className="bg-card border-border flex max-h-[420px] flex-col overflow-hidden rounded-xl border"
     >
       <div className="border-border flex shrink-0 flex-wrap items-center gap-x-4 gap-y-2 border-b px-4 py-3 lg:px-5">
         <h2 className="flex items-center gap-2 text-base font-semibold lg:text-lg">

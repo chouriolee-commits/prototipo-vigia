@@ -50,7 +50,7 @@ export function MonitorFuente() {
   const pending = alerts.filter((a) => a.estado === 'pendiente').length
 
   return (
-    <main className="flex min-h-0 w-full flex-1 flex-col gap-5 p-4 md:max-h-[calc(100svh-65px)] md:overflow-hidden lg:gap-6 lg:p-6">
+    <main className="flex w-full flex-1 flex-col gap-5 overflow-y-auto p-4 lg:gap-6 lg:p-6">
       {/* Video a lo ancho arriba */}
       <HeroVideoFeed
         src={videoUrl(fuenteNombre)}
@@ -109,10 +109,10 @@ export function MonitorFuente() {
       </section>
 
       {/* Paneles organizados en grid: alertas, eventos y análisis */}
-      <div className="grid min-h-0 flex-1 auto-rows-fr grid-cols-1 gap-5 lg:grid-cols-3 lg:gap-6">
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-3 lg:gap-6">
         <section
           aria-label="Alertas pendientes"
-          className="bg-card border-border flex min-h-0 flex-col overflow-hidden rounded-xl border"
+          className="bg-card border-border flex max-h-[420px] flex-col overflow-hidden rounded-xl border"
         >
           <div className="border-border flex shrink-0 flex-wrap items-center gap-x-4 gap-y-2 border-b px-4 py-3 lg:px-5">
             <h2 className="flex items-center gap-2 text-sm font-semibold">

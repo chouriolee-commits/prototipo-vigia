@@ -68,6 +68,7 @@ export function IaChatModal({ open, onClose }: Props) {
 
   function comenzarArrastre(e: React.PointerEvent) {
     if (e.button !== 0) return
+    if ((e.target as HTMLElement).closest('button')) return
     const ventana = ventanaRef.current
     if (!ventana || pos === null) return
     const rect = ventana.getBoundingClientRect()
