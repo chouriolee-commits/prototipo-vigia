@@ -10,7 +10,7 @@ class Config(BaseSettings):
 
     vision_source: str = "samples/video_demo.mp4"
     vision_samples_dir: str = "../vision/samples"
-    vision_conf_threshold: float = 0.25
+    vision_conf_threshold: float = 0.15
     vision_fps_sample: int = 1
     vision_classes: str = "19,17,18"
     vision_loop: bool = False

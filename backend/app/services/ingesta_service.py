@@ -77,7 +77,16 @@ async def procesar_evento(
             alerta.analisis_ia = analisis
 
         enviado = await n8n_client.notificar_alerta(
-            alerta.id, alerta.tipo_alerta, alerta.nivel, alerta.descripcion
+            alerta.id,
+            alerta.tipo_alerta,
+            alerta.nivel,
+            alerta.descripcion,
+            timestamp=alerta.timestamp,
+            analisis_ia=analisis,
+            contexto={
+                "fuente": evento.fuente,
+                "animales_detectados": evento.conteo_total,
+            },
         )
         alerta.notificado_n8n = enviado
 

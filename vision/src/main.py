@@ -55,7 +55,7 @@ async def _procesar_fuente() -> None:
         return
     _PROCESSING = True
     try:
-        detector = Detector(modelo="yolov8n.pt", conf_threshold=config.vision_conf_threshold)
+        detector = Detector(modelo="yolov8m.pt", conf_threshold=config.vision_conf_threshold)
         reader = SourceReader(config.vision_source, config.vision_samples_dir)
         client = BackendClient(config.backend_url, config.backend_ingest_path)
 
@@ -111,7 +111,7 @@ async def health() -> HealthResponse:
     config = get_config()
     return HealthResponse(
         status="ok" if not _PROCESSING else "procesando",
-        model="yolov8n",
+        model="yolov8m",
         source=config.vision_source,
     )
 

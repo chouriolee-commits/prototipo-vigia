@@ -13,8 +13,11 @@ async def notificar_alerta(
     tipo_alerta: str,
     nivel: str,
     descripcion: str,
+    timestamp: datetime | None = None,
+    analisis_ia: dict | None = None,
+    contexto: dict | None = None,
 ) -> bool:
-    """Dispara el webhook a n8n. Devuelve True solo si se envió correctamente."""
+    """Dispara el webhook a n8n (spec-04 §3.2). Devuelve True solo si se envió correctamente."""
     settings = get_settings()
     if not settings.n8n_enabled:
         return False
@@ -24,7 +27,9 @@ async def notificar_alerta(
         "tipo_alerta": tipo_alerta,
         "nivel": nivel,
         "descripcion": descripcion,
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": (timestamp or datetime.now(timezone.utc)).isoformat(),
+        "analisis_ia": analisis_ia,
+        "contexto": contexto,
     }
     try:
         async with httpx.AsyncClient(timeout=5.0) as client:

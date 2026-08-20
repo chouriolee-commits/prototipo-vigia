@@ -52,7 +52,7 @@ echo "==> [1/2] Backend FastAPI  :$BACKEND_PORT"
     echo "    Creando backend/.env desde .env.example..."
     cp .env.example .env
   fi
-  nohup .venv/bin/uvicorn app.main:app --port "$BACKEND_PORT" > "$ROOT/scripts/logs/backend.log" 2>&1 &
+  nohup .venv/bin/uvicorn app.main:app --host 0.0.0.0 --port "$BACKEND_PORT" > "$ROOT/scripts/logs/backend.log" 2>&1 &
   echo "$!" >> "$PIDFILE"
 )
 

@@ -25,11 +25,20 @@ class EvaluadorAlertas:
         self._confianza_reciente: defaultdict[str, deque[float]] = defaultdict(
             lambda: deque(maxlen=10)
         )
+        # Estado edge-triggered (alerta solo ante cambios, no por condición sostenida).
+        self._aislamiento_alertado: defaultdict[str, bool] = defaultdict(bool)
+        self._conteo_bajo_activo: defaultdict[str, bool] = defaultdict(bool)
+        self._sin_actividad_emitida: defaultdict[str, bool] = defaultdict(bool)
+        self._calidad_baja_activa: defaultdict[str, bool] = defaultdict(bool)
 
     def reiniciar_fuente(self, fuente: str) -> None:
         self._frames_solo.pop(fuente, None)
         self._ultimo_evento.pop(fuente, None)
         self._confianza_reciente.pop(fuente, None)
+        self._aislamiento_alertado.pop(fuente, None)
+        self._conteo_bajo_activo.pop(fuente, None)
+        self._sin_actividad_emitida.pop(fuente, None)
+        self._calidad_baja_activa.pop(fuente, None)
 
     def evaluar(self, evento: EventoDeteccion, config: dict[str, str]) -> list[dict]:
         """Devuelve alertas candidatas: list[dict] con tipo_alerta/nivel/descripcion."""
@@ -47,7 +56,11 @@ class EvaluadorAlertas:
             solo = evento.animales_detectados[0]
             if solo.confianza >= umbral:
                 self._frames_solo[fuente] += 1
-                if self._frames_solo[fuente] >= frames_aisl:
+                if (
+                    self._frames_solo[fuente] >= frames_aisl
+                    and not self._aislamiento_alertado[fuente]
+                ):
+                    self._aislamiento_alertado[fuente] = True
                     alertas.append(
                         {
                             "tipo_alerta": "posible_aislamiento",
@@ -60,10 +73,14 @@ class EvaluadorAlertas:
                     )
             else:
                 self._frames_solo[fuente] = 0
+                self._aislamiento_alertado[fuente] = False
         else:
             self._frames_solo[fuente] = 0
+            self._aislamiento_alertado[fuente] = False
 
-        if evento.conteo_total < minimo:
+        bajo = evento.conteo_total < minimo
+        if bajo and not self._conteo_bajo_activo[fuente]:
+            self._conteo_bajo_activo[fuente] = True
             alertas.append(
                 {
                     "tipo_alerta": "conteo_bajo",
@@ -74,11 +91,14 @@ class EvaluadorAlertas:
                     ),
                 }
             )
+        elif not bajo:
+            self._conteo_bajo_activo[fuente] = False
 
         ultimo = self._ultimo_evento.get(fuente)
         if ultimo is not None:
             gap_min = (evento.timestamp - ultimo).total_seconds() / 60
-            if gap_min > ventana:
+            if gap_min > ventana and not self._sin_actividad_emitida[fuente]:
+                self._sin_actividad_emitida[fuente] = True
                 alertas.append(
                     {
                         "tipo_alerta": "sin_actividad",
@@ -89,12 +109,16 @@ class EvaluadorAlertas:
                         ),
                     }
                 )
+            elif gap_min <= ventana:
+                self._sin_actividad_emitida[fuente] = False
         self._ultimo_evento[fuente] = evento.timestamp
 
         self._confianza_reciente[fuente].append(confianza_media)
         if len(self._confianza_reciente[fuente]) == 10:
             promedio = sum(self._confianza_reciente[fuente]) / 10
-            if promedio < 0.5:
+            baja = promedio < 0.5
+            if baja and not self._calidad_baja_activa[fuente]:
+                self._calidad_baja_activa[fuente] = True
                 alertas.append(
                     {
                         "tipo_alerta": "calidad_video_baja",
@@ -105,5 +129,7 @@ class EvaluadorAlertas:
                         ),
                     }
                 )
+            elif not baja:
+                self._calidad_baja_activa[fuente] = False
 
         return alertas
