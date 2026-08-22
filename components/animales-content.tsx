@@ -46,9 +46,9 @@ export function AnimalesContent() {
       meta={`${animales.length} registrados`}
     >
       {cargando ? (
-        <p className="py-10 text-center text-sm text-slate-500">Cargando animales…</p>
+        <p className="py-10 text-center text-sm text-muted-foreground">Cargando animales…</p>
       ) : error ? (
-        <p className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-6 text-center text-sm text-rose-700">
+        <p className="rounded-xl border border-rose-500/30 bg-rose-500/10 px-4 py-6 text-center text-sm text-rose-300">
           {error}
         </p>
       ) : (
@@ -84,8 +84,8 @@ export function AnimalesContent() {
                     <span
                       className={`inline-flex rounded-full border px-2 py-0.5 text-[11px] font-medium capitalize ${
                         animal.activo
-                          ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
-                          : 'border-slate-200 bg-slate-100 text-slate-500'
+                          ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
+                          : 'border-border bg-accent text-muted-foreground'
                       }`}
                     >
                       {animal.activo ? 'Activo' : 'Inactivo'}
@@ -95,7 +95,7 @@ export function AnimalesContent() {
               ))}
               {animales.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="px-5 py-8 text-center text-sm text-slate-500">
+                  <td colSpan={6} className="px-5 py-8 text-center text-sm text-muted-foreground">
                     Sin animales registrados.
                   </td>
                 </tr>

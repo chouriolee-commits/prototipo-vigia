@@ -69,24 +69,24 @@ export function VigiaNavbar() {
   const display = usuario?.email?.split('@')[0] ?? 'usuario'
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-slate-200/80 bg-white/80 backdrop-blur-xl">
+    <header className="sticky top-0 z-40 w-full border-b border-border bg-card backdrop-blur-xl">
       <div className="mx-auto flex h-16 w-full max-w-[1600px] items-center gap-3 px-4 lg:px-6">
         <Link href="/" className="flex shrink-0 items-center gap-3">
-          <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-indigo-500 text-white shadow-sm shadow-violet-200">
+          <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-700 to-teal-500 text-white shadow-sm shadow-emerald-950/40">
             <Radio className="size-4" aria-hidden="true" />
           </span>
           <span className="flex flex-col leading-none">
-            <span className="text-sm font-black tracking-[0.2em] text-slate-900">
+            <span className="text-sm font-black tracking-[0.2em] text-foreground">
               VIGÍA
             </span>
-            <span className="mt-1 text-[10px] font-medium tracking-[0.12em] text-slate-500 uppercase">
+            <span className="mt-1 text-[10px] font-medium tracking-[0.12em] text-muted-foreground uppercase">
               Vigilancia animal
             </span>
           </span>
         </Link>
 
         <nav aria-label="Navegación principal" className="ml-4 hidden md:block">
-          <ul className="flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50/80 p-1 shadow-sm">
+          <ul className="flex items-center gap-1 rounded-full border border-border bg-muted/60 p-1 shadow-sm">
             {nav.map(({ href, label }) => {
               const active =
                 href === '/' ? pathname === '/' : pathname.startsWith(href)
@@ -97,8 +97,8 @@ export function VigiaNavbar() {
                     aria-current={active ? 'page' : undefined}
                     className={`relative flex items-center rounded-full px-3.5 py-2 text-sm font-medium transition-all ${
                       active
-                        ? 'bg-white text-slate-900 shadow-sm ring-1 ring-slate-200'
-                        : 'text-slate-600 hover:bg-white hover:text-slate-900'
+                        ? 'bg-card text-foreground shadow-sm ring-1 ring-border'
+                        : 'text-muted-foreground hover:bg-card hover:text-foreground'
                     }`}
                   >
                     {label}
@@ -113,7 +113,7 @@ export function VigiaNavbar() {
           <button
             type="button"
             onClick={() => setChatOpen(true)}
-            className="flex size-9 items-center justify-center rounded-full border border-violet-200 bg-violet-50 text-violet-700 shadow-sm hover:border-violet-300 hover:bg-violet-100"
+            className="flex size-9 items-center justify-center rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 shadow-sm hover:border-emerald-500/40 hover:bg-emerald-500/20"
             aria-label="Abrir asistente IA"
           >
             <Bot className="size-4" aria-hidden="true" />
@@ -121,7 +121,7 @@ export function VigiaNavbar() {
 
           <Link
             href="/alertas"
-            className="relative flex size-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-sm hover:border-violet-200 hover:text-violet-700"
+            className="relative flex size-9 items-center justify-center rounded-full border border-border bg-card text-muted-foreground shadow-sm hover:border-emerald-500/40 hover:text-emerald-300"
           >
             <Bell className="size-4" aria-hidden="true" />
             {pending > 0 && (
@@ -140,21 +140,21 @@ export function VigiaNavbar() {
               onClick={() => setPerfilOpen((o) => !o)}
               aria-expanded={perfilOpen}
               aria-haspopup="menu"
-              className="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-2 py-1.5 text-sm font-medium text-slate-700 shadow-sm hover:border-violet-200 hover:text-violet-700"
+              className="flex items-center gap-2 rounded-full border border-border bg-card px-2 py-1.5 text-sm font-medium text-foreground/90 shadow-sm hover:border-emerald-500/40 hover:text-emerald-300"
             >
-              <span className="flex size-8 items-center justify-center rounded-full bg-gradient-to-br from-slate-900 to-slate-600 text-xs font-semibold text-white">
+              <span className="flex size-8 items-center justify-center rounded-full bg-gradient-to-br from-emerald-800 to-teal-600 text-xs font-semibold text-white">
                 {iniciales(display)}
               </span>
               <span className="hidden text-left sm:block">
-                <span className="block text-[10px] tracking-[0.12em] text-slate-400 uppercase">
+                <span className="block text-[10px] tracking-[0.12em] text-muted-foreground uppercase">
                   Ops
                 </span>
-                <span className="block max-w-[10rem] truncate text-xs font-semibold capitalize text-slate-700">
+                <span className="block max-w-[10rem] truncate text-xs font-semibold capitalize text-foreground/90">
                   {display}
                 </span>
               </span>
               <ChevronDown
-                className={`size-3.5 text-slate-400 transition-transform ${perfilOpen ? 'rotate-180' : ''}`}
+                className={`size-3.5 text-muted-foreground transition-transform ${perfilOpen ? 'rotate-180' : ''}`}
                 aria-hidden="true"
               />
             </button>
@@ -162,16 +162,16 @@ export function VigiaNavbar() {
             {perfilOpen && (
               <div
                 role="menu"
-                className="animate-in fade-in zoom-in-95 absolute right-0 mt-2 w-64 rounded-2xl border border-slate-200 bg-white p-1.5 shadow-xl"
+                className="animate-in fade-in zoom-in-95 absolute right-0 mt-2 w-64 rounded-2xl border border-border bg-card p-1.5 shadow-xl"
               >
-                <div className="border-b border-slate-100 px-3 py-2.5">
-                  <p className="text-[10px] font-semibold tracking-wide text-slate-400 uppercase">
+                <div className="border-b border-border/60 px-3 py-2.5">
+                  <p className="text-[10px] font-semibold tracking-wide text-muted-foreground uppercase">
                     Sesión iniciada
                   </p>
-                  <p className="mt-0.5 truncate text-sm font-semibold text-slate-900">
+                  <p className="mt-0.5 truncate text-sm font-semibold text-foreground">
                     {usuario?.email ?? 'Cargando…'}
                   </p>
-                  <p className="text-xs text-slate-500">Rol: {usuario?.rol ?? 'operador'}</p>
+                  <p className="text-xs text-muted-foreground">Rol: {usuario?.rol ?? 'operador'}</p>
                 </div>
                 <button
                   type="button"
@@ -180,7 +180,7 @@ export function VigiaNavbar() {
                     setPerfilOpen(false)
                     void logout().finally(() => router.replace('/login'))
                   }}
-                  className="mt-1 flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-rose-600 hover:bg-rose-50"
+                  className="mt-1 flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-rose-300 hover:bg-rose-500/10"
                 >
                   <LogOut className="size-4" aria-hidden="true" />
                   Cerrar sesión
@@ -191,7 +191,7 @@ export function VigiaNavbar() {
         </div>
       </div>
 
-      <nav aria-label="Navegación principal móvil" className="border-t border-slate-200 md:hidden">
+      <nav aria-label="Navegación principal móvil" className="border-t border-border md:hidden">
         <ul className="flex items-center gap-1 overflow-x-auto px-3 py-2">
           {nav.map(({ href, label }) => {
             const active =
@@ -203,8 +203,8 @@ export function VigiaNavbar() {
                   aria-current={active ? 'page' : undefined}
                   className={`block rounded-full px-3 py-1.5 text-xs font-medium whitespace-nowrap ${
                     active
-                      ? 'bg-violet-50 text-violet-700 ring-1 ring-violet-100'
-                      : 'text-slate-600'
+                      ? 'bg-emerald-500/10 text-emerald-300 ring-1 ring-emerald-500/20'
+                      : 'text-muted-foreground'
                   }`}
                 >
                   {label}

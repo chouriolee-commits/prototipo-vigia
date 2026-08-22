@@ -133,26 +133,26 @@ export function AnalisisIaPanel() {
               <p className="text-base leading-relaxed">{analisis.resumen}</p>
             </div>
 
-            <div className="rounded-lg border border-slate-200 p-4">
+            <div className="rounded-lg border border-border p-4">
               <h3 className="text-muted-foreground mb-1.5 text-sm font-semibold tracking-wide uppercase">
                 Justificación
               </h3>
-              <p className="text-base leading-relaxed text-slate-700">
+              <p className="text-base leading-relaxed text-foreground/90">
                 {analisis.justificacion}
               </p>
             </div>
 
-            <div className="bg-emerald-50 rounded-lg border border-emerald-200 p-4">
-              <h3 className="text-emerald-700 mb-1.5 text-sm font-semibold tracking-wide uppercase">
+            <div className="bg-emerald-500/10 rounded-lg border border-emerald-500/30 p-4">
+              <h3 className="text-emerald-300 mb-1.5 text-sm font-semibold tracking-wide uppercase">
                 Recomendación
               </h3>
-              <p className="text-base leading-relaxed text-emerald-900">
+              <p className="text-base leading-relaxed text-foreground/90">
                 {analisis.recomendacion}
               </p>
             </div>
 
-            <div className="rounded-lg border border-amber-200 bg-amber-50 p-4">
-              <p className="flex items-start gap-2 text-sm leading-relaxed text-amber-800">
+            <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-4">
+              <p className="flex items-start gap-2 text-sm leading-relaxed text-amber-300">
                 <TriangleAlert className="mt-0.5 size-5 shrink-0" aria-hidden="true" />
                 <span>{analisis.disclaimer}</span>
               </p>

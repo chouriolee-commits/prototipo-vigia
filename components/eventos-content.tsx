@@ -57,9 +57,9 @@ export function EventosContent() {
       </p>
 
       {cargando ? (
-        <p className="py-10 text-center text-sm text-slate-500">Cargando eventos…</p>
+        <p className="py-10 text-center text-sm text-muted-foreground">Cargando eventos…</p>
       ) : error ? (
-        <p className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-6 text-center text-sm text-rose-700">
+        <p className="rounded-xl border border-rose-500/30 bg-rose-500/10 px-4 py-6 text-center text-sm text-rose-300">
           {error}
         </p>
       ) : (
@@ -111,7 +111,7 @@ export function EventosContent() {
               )
             })}
             {eventos.length === 0 && (
-              <li className="px-5 py-8 text-center text-sm text-slate-500">
+              <li className="px-5 py-8 text-center text-sm text-muted-foreground">
                 Sin eventos registrados.
               </li>
             )}

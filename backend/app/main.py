@@ -25,7 +25,18 @@ app.add_middleware(
 
 app.include_router(api_router, prefix="/api/v1")
 
-_MEDIA_BASE = Path(settings.vision_samples_dir).resolve()
+_MEDIA_BASE = (
+    Path(settings.vision_samples_dir)
+    if Path(settings.vision_samples_dir).is_absolute()
+    else next(
+        candidato
+        for candidato in [
+            (Path.cwd() / settings.vision_samples_dir),
+            (Path(__file__).resolve().parents[1] / settings.vision_samples_dir),
+        ]
+        if candidato.is_dir()
+    )
+).resolve()
 
 
 @app.get("/media/{path:path}")

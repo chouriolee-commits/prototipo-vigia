@@ -129,7 +129,7 @@ export function IaChatModal({ open, onClose }: Props) {
       role="dialog"
       aria-modal="true"
       aria-label="Asistente IA de VIGÍA"
-      className="animate-in fade-in zoom-in-95 fixed z-50 flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl"
+      className="animate-in fade-in zoom-in-95 fixed z-50 flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-2xl"
       style={{
         width: ANCHO,
         height: ALTO,
@@ -146,21 +146,21 @@ export function IaChatModal({ open, onClose }: Props) {
         onPointerMove={mover}
         onPointerUp={terminarArrastre}
         onPointerCancel={terminarArrastre}
-        className={`flex shrink-0 cursor-grab items-center gap-3 border-b border-slate-200 px-4 py-3 select-none ${
+        className={`flex shrink-0 cursor-grab items-center gap-3 border-b border-border px-4 py-3 select-none ${
           arrastrando ? 'cursor-grabbing' : ''
         }`}
       >
-        <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-indigo-500 text-white">
+        <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-700 to-teal-500 text-white">
           <Bot className="size-4" aria-hidden="true" />
         </span>
         <div className="min-w-0 flex-1">
-          <h2 className="flex items-center gap-2 text-sm font-semibold text-slate-900">
+          <h2 className="flex items-center gap-2 text-sm font-semibold text-foreground">
             Asistente IA
             <span className="text-muted-foreground font-mono text-[10px]">
               gpt-oss-20b
             </span>
           </h2>
-          <p className="flex items-center gap-1.5 text-[11px] text-slate-500">
+          <p className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
             <span className="size-1.5 animate-pulse rounded-full bg-emerald-500" />
             Conectado al agente de monitoreo
           </p>
@@ -169,7 +169,7 @@ export function IaChatModal({ open, onClose }: Props) {
           type="button"
           onClick={onClose}
           aria-label="Cerrar chat"
-          className="flex size-9 shrink-0 items-center justify-center rounded-full text-slate-500 hover:bg-slate-100 hover:text-slate-900"
+          className="flex size-9 shrink-0 items-center justify-center rounded-full text-muted-foreground hover:bg-accent hover:text-foreground"
         >
           <X className="size-4" aria-hidden="true" />
         </button>
@@ -184,12 +184,12 @@ export function IaChatModal({ open, onClose }: Props) {
             <div
               className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed whitespace-pre-wrap ${
                 m.rol === 'user'
-                  ? 'bg-violet-600 text-white rounded-br-sm'
-                  : 'bg-slate-100 text-slate-800 rounded-bl-sm'
+                  ? 'bg-emerald-700 text-white rounded-br-sm'
+                  : 'bg-accent text-foreground rounded-bl-sm'
               }`}
             >
               {m.rol === 'assistant' && (
-                <p className="mb-1 flex items-center gap-1 text-[10px] font-semibold tracking-wide text-violet-500 uppercase">
+                <p className="mb-1 flex items-center gap-1 text-[10px] font-semibold tracking-wide text-emerald-400 uppercase">
                   <Sparkles className="size-3" aria-hidden="true" />
                   VIGÍA IA
                 </p>
@@ -201,7 +201,7 @@ export function IaChatModal({ open, onClose }: Props) {
 
         {cargando && (
           <div className="flex justify-start">
-            <div className="bg-slate-100 flex items-center gap-2 rounded-2xl rounded-bl-sm px-4 py-2.5 text-sm text-slate-500">
+            <div className="bg-accent flex items-center gap-2 rounded-2xl rounded-bl-sm px-4 py-2.5 text-sm text-muted-foreground">
               <LoaderCircle className="animate-spin size-4" aria-hidden="true" />
               Pensando…
             </div>
@@ -209,7 +209,7 @@ export function IaChatModal({ open, onClose }: Props) {
         )}
 
         {error && (
-          <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-700">
+          <p className="rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-xs text-rose-300">
             {error}
           </p>
         )}
@@ -221,7 +221,7 @@ export function IaChatModal({ open, onClose }: Props) {
                 key={s}
                 type="button"
                 onClick={() => enviar(s)}
-                className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-600 hover:border-violet-300 hover:text-violet-700"
+                className="rounded-full border border-border bg-card px-3 py-1.5 text-xs text-muted-foreground hover:border-emerald-500/40 hover:text-emerald-300"
               >
                 {s}
               </button>
@@ -230,7 +230,7 @@ export function IaChatModal({ open, onClose }: Props) {
         )}
       </div>
 
-      <footer className="shrink-0 border-t border-slate-200 p-3">
+      <footer className="shrink-0 border-t border-border p-3">
         <form
           className="flex items-end gap-2"
           onSubmit={(e) => {
@@ -244,7 +244,7 @@ export function IaChatModal({ open, onClose }: Props) {
             onChange={(e) => setInput(e.target.value)}
             rows={2}
             placeholder="Escribe tu pregunta al asistente…"
-            className="min-h-11 flex-1 resize-none rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-800 outline-none placeholder:text-slate-400 focus:border-violet-300 focus:ring-2 focus:ring-violet-100"
+            className="min-h-11 flex-1 resize-none rounded-xl border border-border bg-muted/70 px-3.5 py-2.5 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-emerald-500/40 focus:ring-2 focus:ring-emerald-500/20"
             onKeyDown={(e) => {
               if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault()
@@ -255,7 +255,7 @@ export function IaChatModal({ open, onClose }: Props) {
           <button
             type="submit"
             disabled={!input.trim() || cargando}
-            className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-violet-600 text-white shadow-sm hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-emerald-700 text-white shadow-sm hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <SendHorizonal className="size-4" aria-hidden="true" />
             <span className="sr-only">Enviar mensaje</span>

@@ -57,9 +57,9 @@ export function AlertasContent() {
       meta={`${pendientes} pendientes · ${enRevision} en revisión`}
     >
       {cargando ? (
-        <p className="py-10 text-center text-sm text-slate-500">Cargando alertas…</p>
+        <p className="py-10 text-center text-sm text-muted-foreground">Cargando alertas…</p>
       ) : error ? (
-        <p className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-6 text-center text-sm text-rose-700">
+        <p className="rounded-xl border border-rose-500/30 bg-rose-500/10 px-4 py-6 text-center text-sm text-rose-300">
           {error}
         </p>
       ) : (
@@ -112,7 +112,7 @@ export function AlertasContent() {
               ))}
               {alertas.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="px-5 py-8 text-center text-sm text-slate-500">
+                  <td colSpan={6} className="px-5 py-8 text-center text-sm text-muted-foreground">
                     Sin alertas registradas.
                   </td>
                 </tr>
